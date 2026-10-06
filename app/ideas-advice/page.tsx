@@ -1,6 +1,40 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Clock, Calendar, CheckCircle, ArrowRight } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "DIY Ideas & Home Improvement Advice Guides",
+  description:
+    "Expert DIY guides and home improvement advice. Learn how to paint rooms properly, maintain seasonal gardens, prepare for winter, and choose trade-quality power tools.",
+  alternates: {
+    canonical: "https://bargainstore.uk/ideas-advice",
+  },
+  openGraph: {
+    title: "DIY Ideas & Home Improvement Advice Guides | BargainStore.uk",
+    description:
+      "Expert DIY guides and home improvement advice. Learn how to paint rooms properly, maintain seasonal gardens, and choose trade-quality power tools.",
+    url: "https://bargainstore.uk/ideas-advice",
+    siteName: "BargainStore.uk",
+    locale: "en_GB",
+    type: "article",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "DIY Ideas & Advice Guides — BargainStore.uk",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DIY Ideas & Home Improvement Advice Guides | BargainStore.uk",
+    description:
+      "Expert DIY guides and home improvement advice from UK hardware merchants.",
+    images: ["/opengraph-image.png"],
+  },
+};
 
 export default function IdeasAdvicePage() {
   const articles = [

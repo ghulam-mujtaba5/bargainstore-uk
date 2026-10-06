@@ -6,8 +6,8 @@ export async function POST(request: Request) {
     const { username, password } = body || {};
 
     const expectedUsername = process.env.ADMIN_USERNAME || "admin";
-    const expectedPassword = process.env.ADMIN_PASSWORD || "BargainAdmin2026!";
-    const sessionToken = process.env.ADMIN_SESSION_TOKEN || "bargainstore_admin_authenticated";
+    const expectedPassword = process.env.ADMIN_PASSWORD || "BargainStore@2026!UK";
+    const sessionToken = process.env.ADMIN_SESSION_TOKEN || "bs_prod_token_8892f3a";
 
     if (!username || !password) {
       return NextResponse.json(

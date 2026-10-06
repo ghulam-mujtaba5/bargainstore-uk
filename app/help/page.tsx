@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Truck,
@@ -13,6 +14,39 @@ import {
   MapPin,
   ExternalLink,
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Customer Help, Delivery & Click & Collect Stores",
+  description:
+    "Find answers on UK deliveries, 30-day returns, price match guarantee, and 2-hour Click & Collect at our 175 High St, Cowdenbeath KY4 9QE flagship hub.",
+  alternates: {
+    canonical: "https://bargainstore.uk/help",
+  },
+  openGraph: {
+    title: "Customer Help & Click & Collect Stores | BargainStore.uk",
+    description:
+      "Find answers on UK deliveries, 30-day returns, price match guarantee, and 2-hour Click & Collect at Cowdenbeath.",
+    url: "https://bargainstore.uk/help",
+    siteName: "BargainStore.uk",
+    locale: "en_GB",
+    type: "website",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Customer Help — BargainStore.uk",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Customer Help, Delivery & Click & Collect Stores | BargainStore.uk",
+    description:
+      "Find answers on UK deliveries, 30-day returns, and 2-hour Click & Collect.",
+    images: ["/opengraph-image.png"],
+  },
+};
 
 export default function HelpPage() {
   const sections = [

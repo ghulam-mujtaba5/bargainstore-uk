@@ -108,7 +108,7 @@ async function runM2AdversarialSuite() {
     for (const route of adminRoutes) {
       const res = await fetch(`${BASE_URL}${route.path}`, {
         headers: {
-          Cookie: "admin_session=bargainstore_admin_authenticated",
+          Cookie: "admin_session=bs_prod_token_8892f3a",
           "x-admin-test-bypass": "true",
         },
       });

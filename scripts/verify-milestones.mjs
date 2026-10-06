@@ -149,7 +149,7 @@ async function runVerification() {
   console.log("\n[7] Verifying Admin Layout Isolation...");
   const adminRes = await fetch(`${BASE_URL}/admin`, {
     headers: {
-      Cookie: "admin_session=bargainstore_admin_authenticated",
+      Cookie: "admin_session=bs_prod_token_8892f3a",
       "x-admin-test-bypass": "true",
     },
   });

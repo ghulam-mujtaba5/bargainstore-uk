@@ -1,8 +1,42 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllProducts, getAllCategories } from "@/lib/data";
 import ProductCard from "@/components/ProductCard";
 import { ChevronRight, SlidersHorizontal, Tag, Search } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Shop UK Hardware, DIY Supplies & Power Tools",
+  description:
+    "Explore our full catalogue of DIY tools, garden machinery, homewares, and electricals. Trade-quality brands, Amazon price matching, and free Click & Collect at Cowdenbeath.",
+  alternates: {
+    canonical: "https://bargainstore.uk/shop",
+  },
+  openGraph: {
+    title: "Shop UK Hardware, DIY Supplies & Power Tools | BargainStore.uk",
+    description:
+      "Explore our full catalogue of DIY tools, garden machinery, homewares, and electricals with transparent Amazon price comparisons.",
+    url: "https://bargainstore.uk/shop",
+    siteName: "BargainStore.uk",
+    locale: "en_GB",
+    type: "website",
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "BargainStore.uk — Shop Hardware & DIY Deals",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Shop UK Hardware, DIY Supplies & Power Tools | BargainStore.uk",
+    description:
+      "Explore our full catalogue of DIY tools, garden machinery, homewares, and electricals.",
+    images: ["/opengraph-image.png"],
+  },
+};
 
 interface ShopPageProps {
   searchParams: Promise<{ q?: string; deals?: string; sort?: string; category?: string }>;
