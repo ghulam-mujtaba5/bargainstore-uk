@@ -16,9 +16,14 @@ import {
   X,
   Shield,
   Layers,
+  LogOut,
 } from "lucide-react";
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+  onLogout?: () => void;
+}
+
+export default function AdminSidebar({ onLogout }: AdminSidebarProps = {}) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -204,6 +209,22 @@ export default function AdminSidebar() {
             <Store className="w-4 h-4 text-brand-yellow flex-shrink-0" />
             <span>&larr; View Live Storefront</span>
           </Link>
+
+          <button
+            type="button"
+            onClick={async () => {
+              if (onLogout) {
+                onLogout();
+              } else {
+                await fetch("/api/admin/logout", { method: "POST" });
+                window.location.href = "/admin/login";
+              }
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors font-medium text-xs cursor-pointer"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign Out</span>
+          </button>
         </div>
       </aside>
     </>

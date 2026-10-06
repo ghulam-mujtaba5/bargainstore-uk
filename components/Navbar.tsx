@@ -13,7 +13,6 @@ import {
   ChevronDown,
   Sparkles,
   Tag,
-  Shield,
   ArrowRight,
   Phone,
 } from "lucide-react";
@@ -123,7 +122,7 @@ export default function Navbar({ categories = [] }: NavbarProps) {
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5 font-medium text-white">
               <Store className="w-3.5 h-3.5 text-brand-yellow" />
-              <span>Local Store: <strong className="text-brand-yellow">High Street Hub</strong> (Click & Collect Ready)</span>
+              <span>Local Store: <strong className="text-brand-yellow">High Street Hub</strong> (175 High St • Click &amp; Collect)</span>
             </span>
             <span className="hidden md:inline text-gray-500">|</span>
             <span className="hidden md:inline text-gray-300">
@@ -144,10 +143,6 @@ export default function Navbar({ categories = [] }: NavbarProps) {
             </Link>
             <Link href="/ideas-advice" className="hover:text-brand-yellow hidden sm:inline transition-colors">
               Ideas & Advice
-            </Link>
-            <Link href="/admin" className="font-semibold text-brand-yellow hover:text-white flex items-center gap-1 transition-colors">
-              <Shield className="w-3 h-3" />
-              <span>Admin Portal</span>
             </Link>
           </div>
         </div>
@@ -423,13 +418,6 @@ export default function Navbar({ categories = [] }: NavbarProps) {
             className="block py-2 text-sm font-bold text-brand-yellow"
           >
             🔥 Clearance Deals & Savings
-          </Link>
-          <Link
-            href="/admin"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-sm font-semibold text-brand-yellow"
-          >
-            ⚙️ Admin Portal
           </Link>
         </div>
       )}

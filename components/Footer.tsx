@@ -255,8 +255,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/admin" className="text-amber-400 font-semibold hover:underline block py-0.5">
-                Store Admin Portal
+              <Link href="/help#price-promise" className="hover:text-brand-yellow transition-colors block py-0.5">
+                Price Match Promise
               </Link>
             </li>
           </ul>
@@ -291,15 +291,17 @@ export default function Footer() {
               <a
                 href="https://www.google.com/maps/search/?api=1&query=175+High+St%2C+Cowdenbeath+KY4+9QE"
                 target="_blank"
-                rel="noopener noreferrer"
                 className="text-gray-300 hover:text-brand-yellow transition-colors block py-0.5"
               >
-                Cowdenbeath Store Map ↗
+                <span className="inline-flex items-center gap-1">
+                  <span>Cowdenbeath Store Map</span>
+                  <ExternalLink className="w-3 h-3" />
+                </span>
               </a>
             </li>
             <li>
-              <Link href="/admin/turso" className="text-gray-400 hover:text-white block py-0.5">
-                Turso Edge DB Info
+              <Link href="/help#delivery" className="hover:text-brand-yellow transition-colors block py-0.5">
+                Fast UK Delivery Information
               </Link>
             </li>
           </ul>
@@ -360,15 +362,15 @@ export default function Footer() {
           <div className="text-[11px] text-gray-400">
             Company No. 14285910 | VAT Reg: GB 412 8901 23
           </div>
-          <div className="text-[11px] text-gray-300 font-medium flex flex-wrap items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-brand-yellow shrink-0 inline" />
+          <div className="text-[11px] text-gray-300 font-medium leading-relaxed flex items-start gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-brand-yellow shrink-0 mt-0.5" />
             <span>
               Registered Office: BargainStore UK Ltd,{" "}
-              <strong>175 High St, Cowdenbeath KY4 9QE, United Kingdom</strong>
+              <strong className="text-white">175 High St, Cowdenbeath KY4 9QE, United Kingdom</strong>
             </span>
           </div>
         </div>
-        <div className="flex flex-wrap gap-4 text-xs font-medium">
+        <div className="flex flex-wrap items-center gap-4 text-xs font-medium">
           <Link href="/terms" className="hover:text-brand-yellow transition-colors py-1">
             Terms &amp; Conditions
           </Link>
@@ -377,6 +379,14 @@ export default function Footer() {
           </Link>
           <Link href="/cookies" className="hover:text-brand-yellow transition-colors py-1">
             Cookies
+          </Link>
+          <span className="text-white/20 select-none hidden sm:inline">•</span>
+          <Link
+            href="/admin"
+            className="text-gray-500 hover:text-gray-300 transition-colors py-1 text-[11px] opacity-60 hover:opacity-100"
+            title="Internal Staff Access"
+          >
+            Staff Portal
           </Link>
         </div>
       </div>

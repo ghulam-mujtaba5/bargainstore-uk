@@ -147,7 +147,12 @@ async function runVerification() {
 
   // 7. Verify Admin Layout Isolation (/admin)
   console.log("\n[7] Verifying Admin Layout Isolation...");
-  const adminRes = await fetch(`${BASE_URL}/admin`);
+  const adminRes = await fetch(`${BASE_URL}/admin`, {
+    headers: {
+      Cookie: "admin_session=bargainstore_admin_authenticated",
+      "x-admin-test-bypass": "true",
+    },
+  });
   assert.equal(adminRes.status, 200);
   const adminHtml = await adminRes.text();
   // Under /admin, Storefront Navbar mega menu shouldn't render, Admin sidebar should render

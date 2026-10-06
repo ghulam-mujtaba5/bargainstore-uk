@@ -11,6 +11,7 @@ import {
   Clock,
   ShieldCheck,
   MapPin,
+  ExternalLink,
 } from "lucide-react";
 
 export default function HelpPage() {
@@ -149,7 +150,7 @@ export default function HelpPage() {
               className="inline-flex items-center gap-1 text-xs text-brand-yellow hover:underline font-semibold"
             >
               <span>Get Directions</span>
-              <span>↗</span>
+              <ExternalLink className="w-3 h-3" />
             </a>
           </div>
         </div>
