@@ -86,6 +86,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
 }
 
 export async function getProductById(id: number): Promise<Product | null> {
+  if (!id || isNaN(id) || !isFinite(id)) return null;
   try {
     const list = await db.select().from(products).where(eq(products.id, id)).limit(1);
     return (list[0] as Product) || null;
