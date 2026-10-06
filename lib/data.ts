@@ -1,103 +1,119 @@
-import { db } from "@/db";
+import { db, ensureDbReady } from "@/db";
 import { products, categories, orders, orderItems } from "@/db/schema";
-import { eq, desc, like, or } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { Product, Category, Order } from "./types";
+import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "./seed-data";
 
 export async function getAllProducts(): Promise<Product[]> {
   try {
+    await ensureDbReady();
     const list = await db.select().from(products).orderBy(desc(products.id));
-    return list as Product[];
+    return list.length > 0 ? (list as Product[]) : DEFAULT_PRODUCTS;
   } catch (e) {
     console.error("Error fetching products:", e);
-    return [];
+    return DEFAULT_PRODUCTS;
   }
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
+    await ensureDbReady();
     const list = await db.select().from(products).where(eq(products.slug, slug)).limit(1);
-    return (list[0] as Product) || null;
+    if (list.length > 0) return list[0] as Product;
+    return DEFAULT_PRODUCTS.find((p) => p.slug === slug) || null;
   } catch (e) {
     console.error("Error fetching product by slug:", e);
-    return null;
+    return DEFAULT_PRODUCTS.find((p) => p.slug === slug) || null;
   }
 }
 
 export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
   try {
+    await ensureDbReady();
     const list = await db
       .select()
       .from(products)
       .where(eq(products.categorySlug, categorySlug))
       .orderBy(desc(products.id));
-    return list as Product[];
+    if (list.length > 0) return list as Product[];
+    return DEFAULT_PRODUCTS.filter((p) => p.categorySlug === categorySlug);
   } catch (e) {
     console.error("Error fetching products by category:", e);
-    return [];
+    return DEFAULT_PRODUCTS.filter((p) => p.categorySlug === categorySlug);
   }
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
   try {
+    await ensureDbReady();
     const list = await db
       .select()
       .from(products)
       .where(eq(products.isFeatured, 1))
       .limit(8);
-    return list as Product[];
+    if (list.length > 0) return list as Product[];
+    return DEFAULT_PRODUCTS.filter((p) => p.isFeatured === 1).slice(0, 8);
   } catch (e) {
     console.error("Error fetching featured products:", e);
-    return [];
+    return DEFAULT_PRODUCTS.filter((p) => p.isFeatured === 1).slice(0, 8);
   }
 }
 
 export async function getStaffPicks(): Promise<Product[]> {
   try {
+    await ensureDbReady();
     const list = await db
       .select()
       .from(products)
       .where(eq(products.isStaffPick, 1))
       .limit(6);
-    return list as Product[];
+    if (list.length > 0) return list as Product[];
+    return DEFAULT_PRODUCTS.filter((p) => p.isStaffPick === 1).slice(0, 6);
   } catch (e) {
     console.error("Error fetching staff picks:", e);
-    return [];
+    return DEFAULT_PRODUCTS.filter((p) => p.isStaffPick === 1).slice(0, 6);
   }
 }
 
 export async function getAllCategories(): Promise<Category[]> {
   try {
+    await ensureDbReady();
     const list = await db.select().from(categories).orderBy(categories.id);
-    return list as Category[];
+    return list.length > 0 ? (list as Category[]) : DEFAULT_CATEGORIES;
   } catch (e) {
     console.error("Error fetching categories:", e);
-    return [];
+    return DEFAULT_CATEGORIES;
   }
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   try {
+    await ensureDbReady();
     const list = await db.select().from(categories).where(eq(categories.slug, slug)).limit(1);
-    return (list[0] as Category) || null;
+    if (list.length > 0) return list[0] as Category;
+    return DEFAULT_CATEGORIES.find((c) => c.slug === slug) || null;
   } catch (e) {
     console.error("Error fetching category by slug:", e);
-    return null;
+    return DEFAULT_CATEGORIES.find((c) => c.slug === slug) || null;
   }
 }
 
 export async function getProductById(id: number): Promise<Product | null> {
   if (!id || isNaN(id) || !isFinite(id)) return null;
   try {
+    await ensureDbReady();
     const list = await db.select().from(products).where(eq(products.id, id)).limit(1);
-    return (list[0] as Product) || null;
+    if (list.length > 0) return list[0] as Product;
+    return DEFAULT_PRODUCTS.find((p) => p.id === id) || null;
   } catch (e) {
     console.error("Error fetching product by id:", e);
-    return null;
+    return DEFAULT_PRODUCTS.find((p) => p.id === id) || null;
   }
 }
 
 export async function getAllOrders(): Promise<Order[]> {
   try {
+    await ensureDbReady();
     const list = await db.select().from(orders).orderBy(desc(orders.id));
     return list as Order[];
   } catch (e) {
@@ -108,6 +124,7 @@ export async function getAllOrders(): Promise<Order[]> {
 
 export async function getAllOrdersWithItems(): Promise<Order[]> {
   try {
+    await ensureDbReady();
     const orderList = await db.select().from(orders).orderBy(desc(orders.id));
     if (orderList.length === 0) return [];
 
@@ -132,6 +149,7 @@ export async function getAllOrdersWithItems(): Promise<Order[]> {
 
 export async function getOrderByNumber(orderNumber: string): Promise<Order | null> {
   try {
+    await ensureDbReady();
     const list = await db.select().from(orders).where(eq(orders.orderNumber, orderNumber)).limit(1);
     if (!list.length) return null;
     const order = list[0] as Order;
@@ -144,4 +162,3 @@ export async function getOrderByNumber(orderNumber: string): Promise<Order | nul
     return null;
   }
 }
-

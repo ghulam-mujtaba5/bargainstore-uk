@@ -52,6 +52,13 @@ const organizationJsonLd = {
     contactType: "customer service",
     areaServed: "GB",
   },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "175 High St",
+    addressLocality: "Cowdenbeath",
+    postalCode: "KY4 9QE",
+    addressCountry: "GB",
+  },
 };
 
 export default async function RootLayout({

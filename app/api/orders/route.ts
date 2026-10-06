@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
+import { db, ensureDbReady } from "@/db";
 import { orders, orderItems } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import { isValidUKPostcode, formatUKPostcode, isValidEmail } from "@/lib/validation";
 
 export async function GET() {
   try {
+    await ensureDbReady();
     const list = await db.select().from(orders).orderBy(desc(orders.id));
     return NextResponse.json({ orders: list });
   } catch (err: any) {
@@ -15,6 +16,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    await ensureDbReady();
     const body = await request.json();
     const {
       customerName,

@@ -33,7 +33,7 @@ export default function TermsPage() {
             This website is operated by <strong>BargainStore.uk Ltd</strong> (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;).
             We are registered in England and Wales under Company Registration Number <strong>14285910</strong>.
             Our VAT Registration Number is <strong>GB 412 8901 23</strong>.
-            Our registered office is situated at <strong>100 High Street, Birmingham, B1 1AA, United Kingdom</strong>.
+            Our registered office is situated at <strong>175 High St, Cowdenbeath KY4 9QE, United Kingdom</strong>.
           </p>
         </section>
 

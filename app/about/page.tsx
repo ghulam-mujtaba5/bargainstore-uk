@@ -90,8 +90,8 @@ export default function AboutPage() {
             <span>GB 412 8901 23</span>
           </div>
           <div>
-            <span className="font-semibold text-gray-900 block">Registered Office:</span>
-            <span>100 High Street, Birmingham, B1 1AA, United Kingdom</span>
+            <span className="font-semibold text-gray-900 block">Registered Office &amp; Flagship Store:</span>
+            <span>175 High St, Cowdenbeath KY4 9QE, United Kingdom</span>
           </div>
         </div>
 

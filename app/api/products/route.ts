@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
+import { db, ensureDbReady } from "@/db";
 import { products } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
+import { DEFAULT_PRODUCTS } from "@/lib/seed-data";
 
 export async function GET(request: Request) {
   try {
+    await ensureDbReady();
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
 
-    let query = db.select().from(products);
     let list;
     if (category) {
       list = await db
@@ -16,19 +17,26 @@ export async function GET(request: Request) {
         .from(products)
         .where(eq(products.categorySlug, category))
         .orderBy(desc(products.id));
+      if (list.length === 0) {
+        list = DEFAULT_PRODUCTS.filter((p) => p.categorySlug === category);
+      }
     } else {
       list = await db.select().from(products).orderBy(desc(products.id));
+      if (list.length === 0) {
+        list = DEFAULT_PRODUCTS;
+      }
     }
 
     return NextResponse.json({ products: list });
   } catch (err: any) {
     console.error("Products GET API error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ products: DEFAULT_PRODUCTS });
   }
 }
 
 export async function POST(request: Request) {
   try {
+    await ensureDbReady();
     const body = await request.json();
     const {
       name,

@@ -1,8 +1,11 @@
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
+import { DEFAULT_CATEGORIES, DEFAULT_PRODUCTS } from "@/lib/seed-data";
 
-const url = process.env.TURSO_DATABASE_URL || "file:local.db";
+const isVercel = process.env.VERCEL === "1" || !!process.env.VERCEL_ENV;
+const defaultDbUrl = isVercel ? "file:/tmp/local.db" : "file:local.db";
+const url = process.env.TURSO_DATABASE_URL || defaultDbUrl;
 const authToken = process.env.TURSO_AUTH_TOKEN || undefined;
 
 export const client = createClient({
@@ -11,6 +14,9 @@ export const client = createClient({
 });
 
 export const db = drizzle(client, { schema });
+
+let isInitialized = false;
+let initPromise: Promise<void> | null = null;
 
 // Helper to ensure database tables are created automatically on startup
 export async function initDb() {
@@ -99,4 +105,72 @@ export async function initDb() {
   } catch (_) {
     // Column already exists
   }
+
+  // Seed default categories and products if empty
+  try {
+    const catCheck = await client.execute(`SELECT count(*) as count FROM categories;`);
+    const count = Number(catCheck.rows[0]?.count || 0);
+    if (count === 0) {
+      for (const c of DEFAULT_CATEGORIES) {
+        await client.execute({
+          sql: `INSERT OR IGNORE INTO categories (slug, name, description, icon, image, featured, item_count, subcategories)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          args: [
+            c.slug,
+            c.name,
+            c.description ?? null,
+            c.icon ?? null,
+            c.image ?? null,
+            c.featured ?? 1,
+            c.itemCount ?? 0,
+            c.subcategories ?? null,
+          ],
+        });
+      }
+
+      for (const p of DEFAULT_PRODUCTS) {
+        await client.execute({
+          sql: `INSERT OR IGNORE INTO products (slug, name, category_slug, brand, description, specs, price, compare_price, competitor_name, saving_amount, badge, image, additional_images, stock, rating, review_count, is_staff_pick, is_featured, is_deal_of_the_day)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          args: [
+            p.slug,
+            p.name,
+            p.categorySlug,
+            p.brand,
+            p.description,
+            p.specs ?? null,
+            p.price,
+            p.comparePrice ?? null,
+            p.competitorName ?? "Amazon",
+            p.savingAmount ?? null,
+            p.badge ?? null,
+            p.image,
+            p.additionalImages ?? null,
+            p.stock,
+            p.rating,
+            p.reviewCount,
+            p.isStaffPick,
+            p.isFeatured,
+            p.isDealOfTheDay,
+          ],
+        });
+      }
+    }
+  } catch (err) {
+    console.error("Auto-seed error:", err);
+  }
+}
+
+export async function ensureDbReady() {
+  if (isInitialized) return;
+  if (!initPromise) {
+    initPromise = initDb()
+      .then(() => {
+        isInitialized = true;
+      })
+      .catch((err) => {
+        console.error("Failed to initialize database:", err);
+      });
+  }
+  await initPromise;
 }

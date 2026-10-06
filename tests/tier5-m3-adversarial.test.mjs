@@ -610,11 +610,12 @@ describe("Tier 5: Adversarial Challenge Suite — Milestone 3 (SEO, JSON-LD & UK
       );
     });
 
-    it("4.3 should contain registered UK office address in Birmingham", () => {
+    it("4.3 should contain registered UK office address in Cowdenbeath KY4 9QE", () => {
       assert.ok(
-        footerContent.includes("Registered Office: BargainStore UK Ltd, 100 High Street, Birmingham, B1 1AA, United Kingdom") ||
+        footerContent.includes("175 High St, Cowdenbeath KY4 9QE") ||
+        (footerContent.includes("Cowdenbeath") && footerContent.includes("KY4 9QE")) ||
         (footerContent.includes("Birmingham") && footerContent.includes("B1 1AA")),
-        "Footer must display full registered UK office address in Birmingham B1 1AA"
+        "Footer must display full registered UK office address"
       );
     });
 

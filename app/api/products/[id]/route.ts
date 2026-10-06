@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
+import { db, ensureDbReady } from "@/db";
 import { products } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { DEFAULT_PRODUCTS } from "@/lib/seed-data";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await ensureDbReady();
     const { id } = await params;
     const prod = await db
       .select()
@@ -15,11 +17,16 @@ export async function GET(
       .where(eq(products.id, Number(id)))
       .limit(1);
 
-    if (!prod.length) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    if (prod.length > 0) {
+      return NextResponse.json({ product: prod[0] });
     }
 
-    return NextResponse.json({ product: prod[0] });
+    const fallback = DEFAULT_PRODUCTS.find((p) => p.id === Number(id));
+    if (fallback) {
+      return NextResponse.json({ product: fallback });
+    }
+
+    return NextResponse.json({ error: "Product not found" }, { status: 404 });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
@@ -30,6 +37,7 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await ensureDbReady();
     const { id } = await params;
     const body = await request.json();
 
@@ -73,6 +81,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await ensureDbReady();
     const { id } = await params;
     const body = await request.json();
 
@@ -103,6 +112,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await ensureDbReady();
     const { id } = await params;
     await db.delete(products).where(eq(products.id, Number(id)));
     return NextResponse.json({ success: true });

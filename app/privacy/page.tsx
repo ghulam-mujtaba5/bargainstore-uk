@@ -33,7 +33,7 @@ export default function PrivacyPage() {
             The data controller responsible for your personal data is <strong>BargainStore.uk Ltd</strong> (Company Registration No. <strong>14285910</strong>, registered in England &amp; Wales).
           </p>
           <p>
-            Registered Office: <strong>100 High Street, Birmingham, B1 1AA, United Kingdom</strong>.
+            Registered Office: <strong>175 High St, Cowdenbeath KY4 9QE, United Kingdom</strong>.
             For any data protection inquiries, you may reach our Data Protection Officer at <strong>privacy@bargainstore.uk</strong> or telephone <strong>0800 123 4567</strong>.
           </p>
         </section>

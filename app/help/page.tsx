@@ -10,6 +10,7 @@ import {
   Mail,
   Clock,
   ShieldCheck,
+  MapPin,
 } from "lucide-react";
 
 export default function HelpPage() {
@@ -136,10 +137,21 @@ export default function HelpPage() {
         </div>
 
         <div className="space-y-1">
-          <Clock className="w-6 h-6 text-brand-yellow mx-auto md:mx-0 mb-2" />
-          <h3 className="font-bold text-sm">Need In-Person Help?</h3>
-          <div className="text-sm font-semibold text-white">Visit Your Local High Street Hub</div>
-          <div className="text-xs text-gray-300">Expert advice on key cutting, paint mixing & tools</div>
+          <MapPin className="w-6 h-6 text-brand-yellow mx-auto md:mx-0 mb-2" />
+          <h3 className="font-bold text-sm">Visit Our Flagship Store</h3>
+          <div className="text-sm font-bold text-white">175 High St, Cowdenbeath KY4 9QE</div>
+          <div className="text-xs text-gray-300">Mon–Sat 8am–6pm, Sun 10am–4pm • Click &amp; Collect Ready</div>
+          <div className="pt-1.5">
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=175+High+St%2C+Cowdenbeath+KY4+9QE"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-brand-yellow hover:underline font-semibold"
+            >
+              <span>Get Directions</span>
+              <span>↗</span>
+            </a>
+          </div>
         </div>
       </div>
     </div>

@@ -41,11 +41,41 @@ async function runVerification() {
   assert.equal(tursoStatusData.tursoDashboardUrl, "https://app.turso.tech/ghulam--mujtaba");
   console.log("✓ /api/turso-status passed all checks");
 
-  // 3. Verify PATCH /api/orders/[id] status updater & validation
-  console.log("\n[3] Verifying PATCH /api/orders/[id] status validation & updates...");
-  
-  // 3a. Invalid status -> 400 Bad Request
-  const invalidRes = await fetch(`${BASE_URL}/api/orders/1`, {
+  // 3. Verify PATCH /api/orders/[id] status updater, 404 check & adversarial validation
+  console.log("\n[3] Verifying PATCH /api/orders/[id] status validation, 404 & updates...");
+
+  // 3a. Retrieve existing order dynamically from database
+  const ordersListRes = await fetch(`${BASE_URL}/api/orders`);
+  assert.equal(ordersListRes.status, 200, "/api/orders must return 200");
+  const ordersListData = await ordersListRes.json();
+  assert.ok(ordersListData.orders && ordersListData.orders.length > 0, "Database must have existing orders");
+  const sampleOrder = ordersListData.orders[0];
+  const testOrderId = sampleOrder.id;
+  const originalStatus = sampleOrder.status || "Processing";
+  console.log(`Using live order ID ${testOrderId} (current status: "${originalStatus}") for update testing`);
+
+  // 3b. Nonexistent order ID -> 404 Not Found
+  const notFoundRes = await fetch(`${BASE_URL}/api/orders/9999999`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "Shipped" }),
+  });
+  assert.equal(notFoundRes.status, 404, "Must return 404 Not Found for nonexistent order ID");
+  const notFoundJson = await notFoundRes.json();
+  assert.ok(notFoundJson.error && notFoundJson.error.includes("not found"));
+  console.log("✓ Correctly returned 404 for nonexistent order:", notFoundJson.error);
+
+  // 3c. Empty / malformed body -> 400 Bad Request
+  const malformedRes = await fetch(`${BASE_URL}/api/orders/${testOrderId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: "not-a-valid-json-string",
+  });
+  assert.equal(malformedRes.status, 400, "Must return 400 Bad Request for malformed JSON");
+  console.log("✓ Correctly returned 400 for malformed JSON body");
+
+  // 3d. Invalid status -> 400 Bad Request
+  const invalidRes = await fetch(`${BASE_URL}/api/orders/${testOrderId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status: "FraudulentState" }),
@@ -55,26 +85,26 @@ async function runVerification() {
   assert.ok(invalidJson.error);
   console.log("✓ Correctly returned 400 for invalid status:", invalidJson.error);
 
-  // 3b. Valid status -> 200 OK with order object
-  const validRes = await fetch(`${BASE_URL}/api/orders/1`, {
+  // 3e. Valid status -> 200 OK with order object
+  const nextStatus = originalStatus === "Shipped" ? "Processing" : "Shipped";
+  const validRes = await fetch(`${BASE_URL}/api/orders/${testOrderId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status: "Shipped" }),
+    body: JSON.stringify({ status: nextStatus }),
   });
   assert.equal(validRes.status, 200, "Must return 200 OK on valid status");
   const validJson = await validRes.json();
-  console.log("Valid status response:", JSON.stringify(validJson, null, 2));
   assert.equal(validJson.success, true);
-  assert.equal(validJson.order.id, 1);
-  assert.equal(validJson.order.status, "Shipped");
+  assert.equal(validJson.order.id, testOrderId);
+  assert.equal(validJson.order.status, nextStatus);
 
-  // Restore status to Processing
-  await fetch(`${BASE_URL}/api/orders/1`, {
+  // Restore original status
+  await fetch(`${BASE_URL}/api/orders/${testOrderId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status: "Processing" }),
+    body: JSON.stringify({ status: originalStatus }),
   });
-  console.log("✓ Order status update & validation verified");
+  console.log("✓ Order status update, 404 handling & validation verified");
 
   // 4. Verify /sitemap.xml
   console.log("\n[4] Verifying /sitemap.xml route...");
