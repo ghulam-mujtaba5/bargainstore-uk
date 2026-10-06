@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductBySlug, getProductsByCategory } from "@/lib/data";
@@ -21,6 +22,59 @@ interface ProductPageProps {
 
 export const revalidate = 0;
 
+export async function generateMetadata({
+  params,
+}: ProductPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+
+  if (!product) {
+    return {
+      title: "Product Not Found | BargainStore.uk",
+      description: "The requested product could not be found.",
+    };
+  }
+
+  const title = `${product.name} | BargainStore.uk`;
+  const description =
+    product.description ||
+    `Buy ${product.name} at BargainStore.uk. Genuine UK hardware with fast delivery and price comparison.`;
+  const url = `https://bargainstore.uk/product/${product.slug}`;
+  const imageUrl = product.image.startsWith("http")
+    ? product.image
+    : `https://bargainstore.uk${product.image}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: "BargainStore.uk",
+      locale: "en_GB",
+      type: "website",
+      images: [
+        {
+          url: imageUrl,
+          width: 800,
+          height: 800,
+          alt: product.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
+}
+
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
@@ -41,8 +95,82 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     product.savingAmount ||
     (product.comparePrice ? product.comparePrice - product.price : 0);
 
+  const productImageUrl = product.image.startsWith("http")
+    ? product.image
+    : `https://bargainstore.uk${product.image}`;
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    image: productImageUrl,
+    description: product.description,
+    brand: {
+      "@type": "Brand",
+      name: product.brand,
+    },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "GBP",
+      price: Number(product.price),
+      availability:
+        Number(product.stock) > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      url: `https://bargainstore.uk/product/${product.slug}`,
+    },
+    ...(product.rating > 0 && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: Number(product.rating.toFixed(1)),
+        reviewCount: Number(product.reviewCount) || 1,
+      },
+    }),
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://bargainstore.uk",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Shop",
+        item: "https://bargainstore.uk/shop",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.categorySlug.replace("-", " & "),
+        item: `https://bargainstore.uk/category/${product.categorySlug}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: product.name,
+        item: `https://bargainstore.uk/product/${product.slug}`,
+      },
+    ],
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-10">
+      {/* Schema.org Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-gray-500">
         <Link href="/" className="hover:text-brand-navy">Home</Link>

@@ -1,6 +1,7 @@
 import React from "react";
 import { client } from "@/db";
 import { Database, ExternalLink, CheckCircle2, ShieldCheck, Terminal, Server, RefreshCw } from "lucide-react";
+import TursoPingTester from "@/components/TursoPingTester";
 
 export const revalidate = 0;
 
@@ -32,7 +33,7 @@ export default async function TursoManagerPage() {
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       <div>
-        <h1 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+        <h1 className="text-2xl sm:text-3xl font-black text-gray-900 flex items-center gap-2.5">
           <Database className="w-7 h-7 text-purple-600" />
           <span>Turso Edge Database Manager</span>
         </h1>
@@ -48,11 +49,11 @@ export default async function TursoManagerPage() {
             <span className="bg-purple-500/30 text-purple-200 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full border border-purple-400/20">
               Turso Cloud Account
             </span>
-            <h2 className="text-xl sm:text-2xl font-black mt-2">
-              https://app.turso.tech/ghulam--mujtaba
+            <h2 className="text-xl sm:text-2xl font-black mt-2 font-mono">
+              app.turso.tech/ghulam--mujtaba
             </h2>
-            <p className="text-xs text-purple-200/80 max-w-xl mt-1">
-              You can manage your databases, create replicas, inspect schemas, generate tokens, and view edge metrics directly from your Turso dashboard.
+            <p className="text-xs text-purple-200/80 max-w-xl mt-1 leading-relaxed">
+              Supervise databases, create edge replicas, inspect schemas, rotate authentication tokens, and view edge metrics directly from your official Turso Cloud console.
             </p>
           </div>
 
@@ -68,6 +69,9 @@ export default async function TursoManagerPage() {
         </div>
       </div>
 
+      {/* Interactive Ping & Latency Tester */}
+      <TursoPingTester />
+
       {/* Current Connection Status */}
       <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-6 shadow-2xs">
         <h2 className="text-base font-bold text-gray-900 border-b border-gray-100 pb-3">
@@ -80,7 +84,7 @@ export default async function TursoManagerPage() {
           </div>
         ) : (
           <div className="grid sm:grid-cols-3 gap-4">
-            <div className="p-4 bg-gray-50 rounded-xl space-y-1">
+            <div className="p-4 bg-slate-50 rounded-xl space-y-1 border border-gray-100">
               <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
                 Connection Mode
               </span>
@@ -88,12 +92,12 @@ export default async function TursoManagerPage() {
                 <Server className="w-4 h-4 text-purple-600" />
                 <span>{isCloud ? "Turso Cloud Edge" : "Local SQLite / LibSQL"}</span>
               </div>
-              <span className="text-[10px] text-green-700 font-semibold block">
+              <span className="text-[10px] text-emerald-700 font-semibold block">
                 ● Live & Operational
               </span>
             </div>
 
-            <div className="p-4 bg-gray-50 rounded-xl space-y-1">
+            <div className="p-4 bg-slate-50 rounded-xl space-y-1 border border-gray-100">
               <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
                 Database Target
               </span>
@@ -101,11 +105,11 @@ export default async function TursoManagerPage() {
                 {tursoUrl}
               </div>
               <span className="text-[10px] text-gray-500 block">
-                Auth Token: {hasToken ? "Configured (Hidden)" : "Local mode (Not required)"}
+                Auth Token: {hasToken ? "Configured (Securely Hidden)" : "Local mode (Not required)"}
               </span>
             </div>
 
-            <div className="p-4 bg-gray-50 rounded-xl space-y-1">
+            <div className="p-4 bg-slate-50 rounded-xl space-y-1 border border-gray-100">
               <span className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
                 Drizzle ORM Dialect
               </span>
@@ -125,28 +129,28 @@ export default async function TursoManagerPage() {
             Database Tables & Record Metrics
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-4 rounded-xl bg-brand-softBlue/60 border border-blue-100 text-center">
+            <div className="p-4 rounded-xl bg-slate-50 border border-gray-200 text-center">
               <div className="text-2xl font-black text-brand-navy">{counts.products}</div>
-              <div className="text-xs font-bold text-brand-heading mt-1">products</div>
-              <div className="text-[10px] text-gray-500">Hardware & DIY items</div>
+              <div className="text-xs font-bold text-gray-900 mt-1">products</div>
+              <div className="text-[10px] text-gray-400">Hardware & DIY items</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-brand-softBlue/60 border border-blue-100 text-center">
+            <div className="p-4 rounded-xl bg-slate-50 border border-gray-200 text-center">
               <div className="text-2xl font-black text-brand-navy">{counts.categories}</div>
-              <div className="text-xs font-bold text-brand-heading mt-1">categories</div>
-              <div className="text-[10px] text-gray-500">Departments</div>
+              <div className="text-xs font-bold text-gray-900 mt-1">categories</div>
+              <div className="text-[10px] text-gray-400">Retail departments</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-brand-softBlue/60 border border-blue-100 text-center">
+            <div className="p-4 rounded-xl bg-slate-50 border border-gray-200 text-center">
               <div className="text-2xl font-black text-brand-navy">{counts.orders}</div>
-              <div className="text-xs font-bold text-brand-heading mt-1">orders</div>
-              <div className="text-[10px] text-gray-500">Customer checkouts</div>
+              <div className="text-xs font-bold text-gray-900 mt-1">orders</div>
+              <div className="text-[10px] text-gray-400">Customer checkouts</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-brand-softBlue/60 border border-blue-100 text-center">
+            <div className="p-4 rounded-xl bg-slate-50 border border-gray-200 text-center">
               <div className="text-2xl font-black text-brand-navy">{counts.orderItems}</div>
-              <div className="text-xs font-bold text-brand-heading mt-1">order_items</div>
-              <div className="text-[10px] text-gray-500">Line item associations</div>
+              <div className="text-xs font-bold text-gray-900 mt-1">order_items</div>
+              <div className="text-[10px] text-gray-400">Line item associations</div>
             </div>
           </div>
         </div>

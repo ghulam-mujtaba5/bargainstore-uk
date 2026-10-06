@@ -17,6 +17,7 @@ import {
   Store,
   CheckCircle2,
   ShieldCheck,
+  ChevronRight,
 } from "lucide-react";
 
 export const revalidate = 0; // Ensure fresh data from Turso
@@ -28,20 +29,26 @@ export default async function HomePage() {
     getStaffPicks(),
   ]);
 
-  // Featured deal for hero promo card
-  const dealOfTheWeek = featuredProducts.find((p) => p.isDealOfTheDay === 1) || featuredProducts[0];
+  const brandLogos = [
+    { name: "Black+Decker", src: "/assets/brands/black-decker.webp" },
+    { name: "Stanley", src: "/assets/brands/stanley.webp" },
+    { name: "Hozelock", src: "/assets/brands/hozelock.webp" },
+    { name: "Flymo", src: "/assets/brands/flymo.webp" },
+    { name: "Tower", src: "/assets/brands/tower.webp" },
+    { name: "Joseph Joseph", src: "/assets/brands/joseph-joseph.webp" },
+  ];
 
   return (
-    <div className="space-y-10 md:space-y-14 pb-16">
-      {/* 1. Hero Banner + Quick Filters */}
+    <div className="space-y-10 md:space-y-12 pb-16">
+      {/* 1. Hero Banner with real graphic and orange department buttons */}
       <HeroBanner />
 
       {/* 2. Value Proposition Trust Banner */}
       <USPBanner />
 
-      {/* 3. Shop by Category Grid */}
+      {/* 3. Shop by Category (Shop by Department) */}
       <section className="max-w-7xl mx-auto px-4">
-        <div className="flex items-end justify-between mb-6">
+        <div className="flex items-end justify-between mb-5">
           <div>
             <span className="text-xs font-bold text-brand-navy uppercase tracking-wider">
               Explore Our Range
@@ -52,7 +59,7 @@ export default async function HomePage() {
           </div>
           <Link
             href="/shop"
-            className="text-xs font-bold text-brand-navy hover:text-brand-red flex items-center gap-1 group"
+            className="text-xs font-bold text-brand-navy hover:text-[#e30613] flex items-center gap-1 group"
           >
             <span>View All Departments</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -66,22 +73,19 @@ export default async function HomePage() {
               href={`/category/${cat.slug}`}
               className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-brand-navy hover:shadow-md transition-all flex flex-col text-center"
             >
-              <div className="aspect-square bg-gray-50 overflow-hidden relative">
-                {cat.image && (
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                )}
-                <div className="absolute inset-0 bg-brand-navy/10 group-hover:bg-transparent transition-colors" />
+              <div className="aspect-[4/3] bg-gray-50 overflow-hidden relative">
+                <img
+                  src={cat.image || `/assets/categories/${cat.slug}.webp`}
+                  alt={cat.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  loading="lazy"
+                />
               </div>
-              <div className="p-3">
+              <div className="p-3 bg-white">
                 <h3 className="text-xs sm:text-sm font-bold text-brand-heading group-hover:text-brand-navy transition-colors line-clamp-1">
                   {cat.name}
                 </h3>
-                <span className="text-[10px] text-gray-500">
+                <span className="text-[11px] text-gray-500 font-medium">
                   {cat.itemCount} Products
                 </span>
               </div>
@@ -90,90 +94,69 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 4. Three-Card Promo Showcase (Matches Home Hardware Direct layout) */}
+      {/* 4. Real Promotional Banners (Exact Home Hardware Direct assets) */}
       <section className="max-w-7xl mx-auto px-4">
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Card 1: Product of the Week */}
-          <div className="bg-gradient-to-br from-brand-navy to-brand-navyDark text-white rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between shadow-md">
-            <div className="space-y-2">
-              <span className="bg-brand-yellow text-brand-navy text-[10px] font-black uppercase px-2.5 py-1 rounded-full inline-block">
-                Product of the Week
-              </span>
-              <h3 className="text-xl font-black leading-snug">
-                Heavy Duty Garage Shelving
-              </h3>
-              <p className="text-xs text-gray-300 leading-relaxed">
-                Holds 875kg total. Snaps together without bolts. Amazon sells similar for £34.99+!
-              </p>
-            </div>
-            <div className="pt-6 flex items-center justify-between">
+        <div className="grid md:grid-cols-12 gap-5 items-stretch">
+          {/* Main Banner: Strata Heavy Duty 5-Tier Shelving Unit */}
+          <div className="md:col-span-8 flex flex-col">
+            <Link
+              href="/product/heavy-duty-5-tier-garage-shelving-unit"
+              className="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-200 bg-white h-full relative"
+            >
+              <img
+                src="/assets/banners/strata-shelving.webp"
+                alt="Strata Heavy Duty Shelving Unit Was £34.99 Now £29.99"
+                className="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-300"
+              />
+            </Link>
+          </div>
+
+          {/* Side Banners: Clearance + Special Offers */}
+          <div className="md:col-span-4 flex flex-col gap-5 justify-between">
+            {/* Real Clearance Banner */}
+            <Link
+              href="/shop?deals=true"
+              className="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-200 bg-white relative flex-1"
+            >
+              <img
+                src="/assets/banners/clearance.webp"
+                alt="Clearance, when it's gone it's gone"
+                className="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-300"
+              />
+            </Link>
+
+            {/* Special Offers Trade Deal Card */}
+            <Link
+              href="/shop?deals=true"
+              className="group block rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-200 bg-gradient-to-br from-[#00205c] to-[#003882] text-white p-5 sm:p-6 relative flex-1 flex flex-col justify-between"
+            >
               <div>
-                <span className="text-xs text-gray-400 line-through block">Amazon: £34.99</span>
-                <span className="text-2xl font-black text-brand-yellow">£27.99</span>
+                <span className="bg-[#ffd100] text-[#00205c] text-[10px] font-black uppercase px-2.5 py-1 rounded-full inline-block mb-2">
+                  Special Offers
+                </span>
+                <h3 className="text-xl font-black text-white leading-tight">
+                  Autumn Savings Event
+                </h3>
+                <p className="text-xs text-blue-100 mt-1 leading-relaxed">
+                  Huge discounts on power tools, garden machinery, heating & home essentials.
+                </p>
               </div>
-              <Link
-                href="/product/heavy-duty-5-tier-garage-shelving-unit"
-                className="px-4 py-2 bg-white text-brand-navy font-bold text-xs rounded-lg hover:bg-brand-yellow transition-colors"
-              >
-                Shop Now
-              </Link>
-            </div>
-          </div>
 
-          {/* Card 2: Autumn Home Fixes */}
-          <div className="bg-gradient-to-br from-amber-700 to-amber-900 text-white rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between shadow-md">
-            <div className="space-y-2">
-              <span className="bg-white/20 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full inline-block">
-                Seasonal Advice
-              </span>
-              <h3 className="text-xl font-black leading-snug">
-                Autumn Weatherproofing
-              </h3>
-              <p className="text-xs text-amber-100 leading-relaxed">
-                Seal cracks, draught-proof doors, and protect exterior woodwork before winter sets in.
-              </p>
-            </div>
-            <div className="pt-6">
-              <Link
-                href="/ideas-advice"
-                className="px-4 py-2 bg-white text-amber-950 font-bold text-xs rounded-lg hover:bg-brand-yellow transition-colors inline-block"
-              >
-                Read 25 DIY Autumn Tips &rarr;
-              </Link>
-            </div>
-          </div>
-
-          {/* Card 3: Big Brand Clearance */}
-          <div className="bg-gradient-to-br from-brand-red to-red-900 text-white rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between shadow-md">
-            <div className="space-y-2">
-              <span className="bg-white text-brand-red text-[10px] font-black uppercase px-2.5 py-1 rounded-full inline-block">
-                When It&apos;s Gone, It&apos;s Gone
-              </span>
-              <h3 className="text-xl font-black leading-snug">
-                Power Tools & Paint Clearance
-              </h3>
-              <p className="text-xs text-red-100 leading-relaxed">
-                Up to 40% off Dulux, Black+Decker, and Kärcher end-of-line stock.
-              </p>
-            </div>
-            <div className="pt-6">
-              <Link
-                href="/shop?deals=true"
-                className="px-4 py-2 bg-white text-brand-red font-bold text-xs rounded-lg hover:bg-brand-yellow hover:text-brand-navy transition-colors inline-block"
-              >
-                View Clearance Range &rarr;
-              </Link>
-            </div>
+              <div className="pt-4 flex items-center justify-between text-xs font-bold text-[#ffd100]">
+                <span>Shop Special Offers</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* 5. "Big Brands, Big Savings" Section (Signature feature) */}
+      {/* 5. "Big Brands, Big Savings" (Signature Home Hardware Direct feature) */}
       <section className="max-w-7xl mx-auto px-4">
-        <div className="bg-brand-softBlue/40 border border-blue-100 rounded-2xl p-6 md:p-8">
+        <div className="bg-[#f2f6fa] border border-blue-100 rounded-2xl p-6 md:p-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
             <div>
-              <div className="inline-flex items-center gap-1 text-xs font-bold text-brand-red mb-1">
+              <div className="inline-flex items-center gap-1 text-xs font-bold text-[#e30613] mb-1">
                 <TrendingDown className="w-4 h-4" />
                 <span>Price Match Guaranteed</span>
               </div>
@@ -181,7 +164,7 @@ export default async function HomePage() {
                 Big Brands, Big Savings
               </h2>
               <p className="text-xs text-brand-slate max-w-2xl mt-1 leading-relaxed">
-                We genuinely check our prices against Amazon, B&Q, and Screwfix. Where we are cheaper, we show you exactly how much you save. No fake markups, just honest British hardware prices.
+                We check our prices daily against Amazon UK, B&Q, Argos and Screwfix. Where we are cheaper, we show you exactly how much you save. No inflated RRPs, just honest British hardware prices.
               </p>
             </div>
 
@@ -206,7 +189,39 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 6. Staff Picks & Bestsellers */}
+      {/* 6. "Our Hero Brands" Grid (Real Logos extracted from reference site) */}
+      <section className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-6">
+          <span className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-1">
+            Official UK Stockist
+          </span>
+          <h2 className="text-2xl md:text-3xl font-black text-brand-heading">
+            Our Hero Brands
+          </h2>
+          <p className="text-xs text-gray-500 max-w-xl mx-auto mt-1">
+            We stock leading British and global hardware brands including Flymo, Black+Decker, Stanley, Hozelock, Tower, and Joseph Joseph.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+          {brandLogos.map((brand, i) => (
+            <Link
+              key={i}
+              href={`/shop?brand=${encodeURIComponent(brand.name)}`}
+              className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-center hover:border-brand-navy hover:shadow-md transition-all group h-24"
+            >
+              <img
+                src={brand.src}
+                alt={brand.name}
+                className="max-h-12 max-w-full object-contain filter group-hover:scale-105 transition-transform"
+                loading="lazy"
+              />
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* 7. Staff Picks & Bestsellers */}
       <section className="max-w-7xl mx-auto px-4">
         <div className="flex items-end justify-between mb-6">
           <div>
@@ -219,7 +234,7 @@ export default async function HomePage() {
           </div>
           <Link
             href="/shop"
-            className="text-xs font-bold text-brand-navy hover:text-brand-red flex items-center gap-1 group"
+            className="text-xs font-bold text-brand-navy hover:text-[#e30613] flex items-center gap-1 group"
           >
             <span>Browse More</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -233,7 +248,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 7. Editorial Guides ("Ideas & Advice") */}
+      {/* 8. Editorial Guides ("Ideas & Advice") */}
       <section className="max-w-7xl mx-auto px-4">
         <div className="flex items-end justify-between mb-6">
           <div>
@@ -246,7 +261,7 @@ export default async function HomePage() {
           </div>
           <Link
             href="/ideas-advice"
-            className="text-xs font-bold text-brand-navy hover:text-brand-red flex items-center gap-1 group"
+            className="text-xs font-bold text-brand-navy hover:text-[#e30613] flex items-center gap-1 group"
           >
             <span>View All Guides</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -263,18 +278,18 @@ export default async function HomePage() {
               />
             </div>
             <div className="p-4 space-y-2">
-              <span className="text-[10px] font-bold text-brand-red uppercase tracking-wider">
-                Home Maintenance
+              <span className="text-[10px] font-bold text-[#e30613] uppercase tracking-wider">
+                DIY & Decorating
               </span>
               <h3 className="text-base font-bold text-brand-heading group-hover:text-brand-navy">
-                25 DIY Jobs to Do in Autumn: The Ultimate Home Maintenance Checklist
+                25 DIY Jobs to Do in October: The Ultimate Autumn Home Maintenance Checklist
               </h3>
               <p className="text-xs text-gray-500 line-clamp-2">
                 Prepare your roof, gutters, radiators and garden for colder temperatures before winter freezes hit.
               </p>
               <Link
                 href="/ideas-advice"
-                className="text-xs font-bold text-brand-navy hover:text-brand-red inline-flex items-center gap-1 pt-1"
+                className="text-xs font-bold text-brand-navy hover:text-[#e30613] inline-flex items-center gap-1 pt-1"
               >
                 <span>Read Full Guide</span>
                 <ArrowRight className="w-3 h-3" />
@@ -291,7 +306,7 @@ export default async function HomePage() {
               />
             </div>
             <div className="p-4 space-y-2">
-              <span className="text-[10px] font-bold text-brand-red uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-[#e30613] uppercase tracking-wider">
                 Painting & Decorating
               </span>
               <h3 className="text-base font-bold text-brand-heading group-hover:text-brand-navy">
@@ -302,7 +317,7 @@ export default async function HomePage() {
               </p>
               <Link
                 href="/ideas-advice"
-                className="text-xs font-bold text-brand-navy hover:text-brand-red inline-flex items-center gap-1 pt-1"
+                className="text-xs font-bold text-brand-navy hover:text-[#e30613] inline-flex items-center gap-1 pt-1"
               >
                 <span>Read Full Guide</span>
                 <ArrowRight className="w-3 h-3" />
@@ -319,7 +334,7 @@ export default async function HomePage() {
               />
             </div>
             <div className="p-4 space-y-2">
-              <span className="text-[10px] font-bold text-brand-red uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-[#e30613] uppercase tracking-wider">
                 Repairs & Insulation
               </span>
               <h3 className="text-base font-bold text-brand-heading group-hover:text-brand-navy">
@@ -330,7 +345,7 @@ export default async function HomePage() {
               </p>
               <Link
                 href="/ideas-advice"
-                className="text-xs font-bold text-brand-navy hover:text-brand-red inline-flex items-center gap-1 pt-1"
+                className="text-xs font-bold text-brand-navy hover:text-[#e30613] inline-flex items-center gap-1 pt-1"
               >
                 <span>Read Full Guide</span>
                 <ArrowRight className="w-3 h-3" />
@@ -340,45 +355,45 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 8. High Street Support & Heritage Narrative */}
+      {/* 9. Support The High Street Narrative */}
       <section className="max-w-7xl mx-auto px-4">
         <div className="bg-brand-navy text-white rounded-2xl p-8 md:p-10 relative overflow-hidden">
           <div className="grid md:grid-cols-12 gap-8 items-center">
             <div className="md:col-span-8 space-y-3">
-              <span className="bg-brand-yellow text-brand-navy text-xs font-black uppercase px-2.5 py-1 rounded-full inline-block">
+              <span className="bg-[#ffd100] text-brand-navy text-xs font-black uppercase px-2.5 py-1 rounded-full inline-block">
                 Support The High Street
               </span>
               <h2 className="text-2xl md:text-3xl font-black tracking-tight">
                 The UK&apos;s Online Hardware Store — Backed by Independent Local Shops
               </h2>
-              <p className="text-sm text-gray-300 leading-relaxed">
+              <p className="text-sm text-gray-200 leading-relaxed">
                 When you order with BargainStore.uk, your purchases support a network of independent local hardware merchants. We combine the low prices and massive selection of an online giant with the friendly community ethos and reliable advice of your local high street shop.
               </p>
               <div className="pt-2 flex flex-wrap gap-4 text-xs font-semibold text-gray-200">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-brand-yellow" />
-                  Free Local Click & Collect
+                  <CheckCircle2 className="w-4 h-4 text-[#ffd100]" />
+                  Free Local Click & Collect from 300+ Stores
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-brand-yellow" />
-                  Fast UK Doorstep Dispatch
+                  <CheckCircle2 className="w-4 h-4 text-[#ffd100]" />
+                  Fast UK Doorstep Dispatch (Royal Mail & DPD)
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-brand-yellow" />
+                  <CheckCircle2 className="w-4 h-4 text-[#ffd100]" />
                   Friendly British Customer Service
                 </span>
               </div>
             </div>
 
             <div className="md:col-span-4 flex flex-col items-center justify-center p-6 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 text-center">
-              <Store className="w-12 h-12 text-brand-yellow mb-2" />
+              <Store className="w-12 h-12 text-[#ffd100] mb-2" />
               <div className="text-lg font-bold">Find Your Nearest Store</div>
               <p className="text-xs text-gray-300 mb-4 mt-1">
                 Collect your orders in person for free with zero minimum spend.
               </p>
               <Link
                 href="/shop"
-                className="w-full py-2.5 bg-brand-yellow hover:bg-brand-yellowHover text-brand-navy font-bold text-xs rounded-lg transition-colors text-center"
+                className="w-full py-2.5 bg-[#ffd100] hover:bg-[#e6bd00] text-brand-navy font-black text-xs rounded-lg transition-colors text-center"
               >
                 Start Shopping
               </Link>

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Mail, ShieldCheck, Heart, Store, ExternalLink } from "lucide-react";
+import { Mail, ShieldCheck, Heart, Store, ExternalLink, Truck, RotateCcw } from "lucide-react";
 
 export default function Footer() {
   const brandLogos = [
@@ -206,7 +206,7 @@ export default function Footer() {
             Payment & Trust
           </h4>
           <p className="text-[11px] text-gray-400 mb-3 leading-relaxed">
-            All orders processed through encrypted 256-bit SSL checkout. Choose flexible buy-now-pay-later with PayPal Pay in 3.
+            All orders processed through 256-Bit SSL Encrypted checkout. Fast UK dispatch with Royal Mail Tracked 48 and DPD Express couriers. 30-Day Money-Back Guarantee.
           </p>
 
           {/* Real Payment Method Badges (from Home Hardware Direct) */}
@@ -226,17 +226,35 @@ export default function Footer() {
             ))}
           </div>
 
-          <div className="text-[11px] text-gray-400 flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-brand-green" />
-            <span>Buyer Protection Guaranteed</span>
+          <div className="space-y-1.5 text-[11px] text-gray-400">
+            <div className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-brand-green" />
+              <span>Buyer Protection Guaranteed</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Truck className="w-4 h-4 text-brand-yellow" />
+              <span>Royal Mail Tracked 48 & DPD Express</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <RotateCcw className="w-4 h-4 text-blue-400" />
+              <span>30-Day Returns & Money-Back Guarantee</span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Copyright & Legal */}
-      <div className="max-w-7xl mx-auto px-4 pt-6 mt-4 border-t border-white/10 text-[11px] text-gray-500 flex flex-col sm:flex-row justify-between items-center gap-3">
-        <div>
-          © {new Date().getFullYear()} BargainStore.uk Ltd. All rights reserved. Registered in the UK.
+      <div className="max-w-7xl mx-auto px-4 pt-6 mt-4 border-t border-white/10 text-[11px] text-gray-500 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="space-y-1">
+          <div>
+            © {new Date().getFullYear()} BargainStore.uk Ltd. All rights reserved. Registered in the UK.
+          </div>
+          <div className="text-[10px] text-gray-400">
+            Company No. 14285910 | VAT Reg: GB 412 8901 23
+          </div>
+          <div className="text-[10px] text-gray-500">
+            Registered Office: BargainStore UK Ltd, 100 High Street, Birmingham, B1 1AA, United Kingdom
+          </div>
         </div>
         <div className="flex gap-4">
           <Link href="/terms" className="hover:text-gray-400">Terms & Conditions</Link>

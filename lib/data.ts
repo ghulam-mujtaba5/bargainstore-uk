@@ -85,12 +85,46 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
   }
 }
 
+export async function getProductById(id: number): Promise<Product | null> {
+  try {
+    const list = await db.select().from(products).where(eq(products.id, id)).limit(1);
+    return (list[0] as Product) || null;
+  } catch (e) {
+    console.error("Error fetching product by id:", e);
+    return null;
+  }
+}
+
 export async function getAllOrders(): Promise<Order[]> {
   try {
     const list = await db.select().from(orders).orderBy(desc(orders.id));
     return list as Order[];
   } catch (e) {
     console.error("Error fetching orders:", e);
+    return [];
+  }
+}
+
+export async function getAllOrdersWithItems(): Promise<Order[]> {
+  try {
+    const orderList = await db.select().from(orders).orderBy(desc(orders.id));
+    if (orderList.length === 0) return [];
+
+    const items = await db.select().from(orderItems);
+    const itemsByOrderId = new Map<number, typeof items>();
+    for (const item of items) {
+      if (!itemsByOrderId.has(item.orderId)) {
+        itemsByOrderId.set(item.orderId, []);
+      }
+      itemsByOrderId.get(item.orderId)!.push(item);
+    }
+
+    return orderList.map((o) => ({
+      ...o,
+      items: itemsByOrderId.get(o.id) || [],
+    })) as Order[];
+  } catch (e) {
+    console.error("Error fetching orders with items:", e);
     return [];
   }
 }
@@ -109,3 +143,4 @@ export async function getOrderByNumber(orderNumber: string): Promise<Order | nul
     return null;
   }
 }
+

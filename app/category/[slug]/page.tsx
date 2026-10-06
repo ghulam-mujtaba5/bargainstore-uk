@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCategoryBySlug, getProductsByCategory, getAllCategories } from "@/lib/data";
@@ -103,6 +104,62 @@ interface CategoryPageProps {
 
 export const revalidate = 0;
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const category = await getCategoryBySlug(slug);
+
+  if (!category) {
+    return {
+      title: "Category Not Found | BargainStore.uk",
+      description: "The requested category could not be found.",
+    };
+  }
+
+  const title = `${category.name} | BargainStore.uk`;
+  const description =
+    category.description ||
+    `Shop ${category.name} at BargainStore.uk. Great deals on DIY, garden, homewares with fast UK delivery.`;
+  const url = `https://bargainstore.uk/category/${category.slug}`;
+  const rawImage = category.image || "/assets/brands/flymo.webp";
+  const imageUrl = rawImage.startsWith("http")
+    ? rawImage
+    : `https://bargainstore.uk${rawImage}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: "BargainStore.uk",
+      locale: "en_GB",
+      type: "website",
+      images: [
+        {
+          url: imageUrl,
+          width: 800,
+          height: 600,
+          alt: category.name,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
+}
+
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { slug } = await params;
   const searchParamsObj = await searchParams;
@@ -141,8 +198,50 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     products.sort((a, b) => (b.savingAmount || 0) - (a.savingAmount || 0));
   }
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://bargainstore.uk",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Shop",
+        item: "https://bargainstore.uk/shop",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: category.name,
+        item: `https://bargainstore.uk/category/${category.slug}`,
+      },
+      ...(sub
+        ? [
+            {
+              "@type": "ListItem",
+              position: 4,
+              name: sub,
+              item: `https://bargainstore.uk/category/${category.slug}?sub=${encodeURIComponent(
+                sub
+              )}`,
+            },
+          ]
+        : []),
+    ],
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+      {/* Schema.org BreadcrumbList Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-gray-500">
         <Link href="/" className="hover:text-brand-navy">Home</Link>
