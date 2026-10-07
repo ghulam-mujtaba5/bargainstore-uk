@@ -6,6 +6,8 @@ import { getCategoryBySlug, getProductsByCategory, getAllCategories } from "@/li
 import ProductCard from "@/components/ProductCard";
 import { ChevronRight, ArrowLeft, SlidersHorizontal, Tag } from "lucide-react";
 import { Product } from "@/lib/types";
+import { SITE_URL, getAbsoluteUrl } from "@/lib/site";
+
 
 const SUBCATEGORY_KEYWORDS: Record<string, string[]> = {
   // Garden & Growing
@@ -123,11 +125,11 @@ export async function generateMetadata({
   const description =
     category.description ||
     `Shop ${category.name} at BargainStore.uk. Great deals on DIY, garden, homewares with fast UK delivery.`;
-  const url = `https://bargainstore.uk/category/${category.slug}`;
+  const url = getAbsoluteUrl(`/category/${category.slug}`);
   const rawImage = category.image || "/assets/brands/flymo.webp";
   const imageUrl = rawImage.startsWith("http")
     ? rawImage
-    : `https://bargainstore.uk${rawImage}`;
+    : getAbsoluteUrl(rawImage);
 
   return {
     title,
@@ -206,19 +208,19 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://bargainstore.uk",
+        item: getAbsoluteUrl("/"),
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Shop",
-        item: "https://bargainstore.uk/shop",
+        item: getAbsoluteUrl("/shop"),
       },
       {
         "@type": "ListItem",
         position: 3,
         name: category.name,
-        item: `https://bargainstore.uk/category/${category.slug}`,
+        item: getAbsoluteUrl(`/category/${category.slug}`),
       },
       ...(sub
         ? [
@@ -226,13 +228,38 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
               "@type": "ListItem",
               position: 4,
               name: sub,
-              item: `https://bargainstore.uk/category/${category.slug}?sub=${encodeURIComponent(
-                sub
-              )}`,
+              item: getAbsoluteUrl(
+                `/category/${category.slug}?sub=${encodeURIComponent(sub)}`
+              ),
             },
           ]
         : []),
     ],
+  };
+
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `${category.name} | BargainStore.uk`,
+    description:
+      category.description ||
+      `Explore ${category.name} products with transparent UK prices at BargainStore.uk.`,
+    url: getAbsoluteUrl(
+      sub
+        ? `/category/${category.slug}?sub=${encodeURIComponent(sub)}`
+        : `/category/${category.slug}`
+    ),
+    mainEntity: {
+      "@type": "ItemList",
+      name: `${category.name} Products`,
+      numberOfItems: products.length,
+      itemListElement: products.map((p, idx) => ({
+        "@type": "ListItem",
+        position: idx + 1,
+        name: p.name,
+        url: getAbsoluteUrl(`/product/${p.slug}`),
+      })),
+    },
   };
 
   return (
@@ -241,6 +268,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      {/* Schema.org CollectionPage Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
       />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-gray-500">

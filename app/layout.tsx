@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartProvider } from "@/lib/cart-context";
 import StorefrontShell from "@/components/StorefrontShell";
 import { getAllCategories } from "@/lib/data";
+import { SITE_URL, getAbsoluteUrl, canonicalBase } from "@/lib/site";
 
 export const viewport: Viewport = {
   themeColor: "#001642",
@@ -13,7 +14,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.bargainstore.uk.com"),
+  metadataBase: canonicalBase,
   title: {
     default: "BargainStore.uk | Trusted UK Brands At Low Prices",
     template: "%s | BargainStore.uk",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
   description:
     "BargainStore.uk — Real UK DIY, garden tools, paints, homewares and appliances with transparent price comparisons against Amazon and the high street. Fast UK delivery & free Click & Collect.",
   applicationName: "BargainStore.uk",
-  authors: [{ name: "BargainStore UK Ltd", url: "https://www.bargainstore.uk.com" }],
+  authors: [{ name: "BargainStore UK Ltd", url: SITE_URL }],
   creator: "BargainStore UK Ltd",
   publisher: "BargainStore UK Ltd",
   formatDetection: {
@@ -49,9 +50,9 @@ export const metadata: Metadata = {
     "discount homewares UK",
   ],
   alternates: {
-    canonical: "https://www.bargainstore.uk.com",
+    canonical: SITE_URL,
     languages: {
-      "en-GB": "https://www.bargainstore.uk.com",
+      "en-GB": SITE_URL,
     },
   },
   icons: {
@@ -86,7 +87,7 @@ export const metadata: Metadata = {
     title: "BargainStore.uk | Trusted UK Brands At Low Prices",
     description:
       "BargainStore.uk — Real UK DIY, garden tools, paints, homewares and appliances with transparent price comparisons against Amazon and the high street. Fast UK delivery & free Click & Collect.",
-    url: "https://www.bargainstore.uk.com",
+    url: SITE_URL,
     siteName: "BargainStore.uk",
     locale: "en_GB",
     type: "website",
@@ -123,12 +124,17 @@ export const metadata: Metadata = {
   classification: "Hardware, DIY, Garden Tools, Paints & Homewares Retail",
 };
 
+// Canonical base URL: https://www.bargainstore.uk.com
+// Legacy domain references for backward compatibility:
+// metadataBase: new URL("https://bargainstore.uk")
+// url: "https://bargainstore.uk"
+
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "BargainStore.uk",
-  url: "https://www.bargainstore.uk.com",
-  logo: "https://www.bargainstore.uk.com/assets/brands/flymo.webp",
+  url: SITE_URL,
+  logo: getAbsoluteUrl("/assets/brands/flymo.webp"),
   description:
     "BargainStore.uk — Real UK DIY, garden tools, paints, homewares and appliances with transparent price comparisons against Amazon and the high street. Fast UK delivery & free Click & Collect.",
   contactPoint: {
@@ -150,12 +156,12 @@ const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "BargainStore.uk",
-  url: "https://www.bargainstore.uk.com",
+  url: SITE_URL,
   potentialAction: {
     "@type": "SearchAction",
     target: {
       "@type": "EntryPoint",
-      urlTemplate: "https://www.bargainstore.uk.com/shop?q={search_term_string}",
+      urlTemplate: getAbsoluteUrl("/shop?q={search_term_string}"),
     },
     "query-input": "required name=search_term_string",
   },
@@ -165,9 +171,9 @@ const localBusinessJsonLd = {
   "@context": "https://schema.org",
   "@type": "HardwareStore",
   name: "BargainStore.uk Flagship Store & Trade Counter",
-  image: "https://www.bargainstore.uk.com/opengraph-image.png",
+  image: getAbsoluteUrl("/opengraph-image.png"),
   telephone: "+44-800-123-4567",
-  url: "https://www.bargainstore.uk.com",
+  url: SITE_URL,
   priceRange: "£",
   address: {
     "@type": "PostalAddress",
@@ -213,7 +219,6 @@ export default async function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="manifest" href="/site.webmanifest" />
         <meta name="apple-mobile-web-app-title" content="BargainStore.uk" />
         <meta name="application-name" content="BargainStore.uk" />
         <meta name="msapplication-TileColor" content="#001642" />

@@ -1,20 +1,30 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Clock, Calendar, CheckCircle, ArrowRight } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  Clock,
+  Calendar,
+  CheckCircle,
+  ArrowRight,
+  HelpCircle,
+  ChevronDown,
+} from "lucide-react";
+import { getAbsoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "DIY Ideas & Home Improvement Advice Guides",
   description:
     "Expert DIY guides and home improvement advice. Learn how to paint rooms properly, maintain seasonal gardens, prepare for winter, and choose trade-quality power tools.",
   alternates: {
-    canonical: "https://bargainstore.uk/ideas-advice",
+    canonical: getAbsoluteUrl("/ideas-advice"),
   },
   openGraph: {
     title: "DIY Ideas & Home Improvement Advice Guides | BargainStore.uk",
     description:
       "Expert DIY guides and home improvement advice. Learn how to paint rooms properly, maintain seasonal gardens, and choose trade-quality power tools.",
-    url: "https://bargainstore.uk/ideas-advice",
+    url: getAbsoluteUrl("/ideas-advice"),
     siteName: "BargainStore.uk",
     locale: "en_GB",
     type: "article",
@@ -86,8 +96,49 @@ export default function IdeasAdvicePage() {
     }
   ];
 
+  const diyFaqs = [
+    {
+      question: "How do I prepare my home and exterior pipes for winter freezing?",
+      answer:
+        "To prevent burst pipes and water damage during cold UK spells, turn off the isolation valves to external outdoor garden taps and drain remaining water. Insulate exposed pipework in unheated lofts, garages, and basements with polyethylene foam lagging. Clear autumn leaves from gutters and fit leaf guards, service garden power tools before storage, and ensure exterior brickwork and window frames are sealed with weatherproof silicone sealant.",
+    },
+    {
+      question: "What is the secret to painting a room without roller marks?",
+      answer:
+        "Achieving a professional streak-free finish starts with proper wall preparation: wash walls thoroughly with sugar soap to remove grease and dust. Mask skirting boards with low-tack painter's tape and cut in along edges using an angled synthetic brush. When rolling, use a medium pile microfibre roller, apply paint in an overlapping 'W' or 'M' pattern, maintain a wet edge without pressing too hard, and lightly roll off in a single uniform downward direction.",
+    },
+    {
+      question: "How can I stop cold draughts around doors and skirting boards?",
+      answer:
+        "Eliminate heat loss and cut energy bills by applying flexible acrylic decorators caulk along gaps between skirting boards and plasterboard walls. For larger cavity gaps around pipe entries and under floorboards, use expanding polyurethane foam. Install self-adhesive rubber weather-strips along wooden window frames and fit heavy-duty brush-strip draught excluders to the bottom of external doors and letterboxes.",
+    },
+    {
+      question: "What safety precautions should I take when using oscillating multi-tools?",
+      answer:
+        "Always wear safety goggles (EN166 rated) and hearing protection when operating high-speed oscillating multi-tools. Securely clamp workpieces to prevent vibration movement, ensure accessories are locked into the Starlock or quick-release collar, check for hidden electric cables and pipework behind plasterboard with a digital multi-detector before plunge-cutting, and disconnect power or remove the lithium battery before changing blades.",
+    },
+  ];
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: diyFaqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+      {/* Schema.org FAQPage Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Header */}
       <div className="border-b border-gray-200 pb-6">
         <Link href="/" className="text-xs text-brand-navy hover:underline flex items-center gap-1 mb-2">
@@ -170,6 +221,39 @@ export default function IdeasAdvicePage() {
           </article>
         ))}
       </div>
+
+      {/* Frequently Asked DIY Questions Module */}
+      <section className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 space-y-6 shadow-2xs">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-red uppercase tracking-wider">
+            <HelpCircle className="w-4 h-4 text-brand-red" />
+            <span>Practical Advice Q&A</span>
+          </div>
+          <h2 className="text-xl md:text-2xl font-black text-brand-heading">
+            Frequently Asked DIY Questions
+          </h2>
+          <p className="text-xs text-brand-slate max-w-xl">
+            Expert answers from experienced UK trade professionals to ensure your home improvement projects run smoothly and safely.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          {diyFaqs.map((faq, idx) => (
+            <details
+              key={idx}
+              className="group border border-gray-200 rounded-xl bg-gray-50/50 open:bg-white open:border-brand-navy/30 transition-all duration-200"
+            >
+              <summary className="flex items-center justify-between p-4 cursor-pointer list-none font-bold text-sm text-brand-heading hover:text-brand-navy">
+                <span>{faq.question}</span>
+                <ChevronDown className="w-4 h-4 text-brand-navy transition-transform duration-200 group-open:rotate-180 flex-shrink-0 ml-2" />
+              </summary>
+              <div className="px-4 pb-4 pt-1 text-xs text-gray-700 leading-relaxed border-t border-gray-100">
+                {faq.answer}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

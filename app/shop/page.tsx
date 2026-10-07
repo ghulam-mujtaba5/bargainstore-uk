@@ -4,19 +4,20 @@ import Link from "next/link";
 import { getAllProducts, getAllCategories } from "@/lib/data";
 import ProductCard from "@/components/ProductCard";
 import { ChevronRight, SlidersHorizontal, Tag, Search } from "lucide-react";
+import { getAbsoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Shop UK Hardware, DIY Supplies & Power Tools",
   description:
     "Explore our full catalogue of DIY tools, garden machinery, homewares, and electricals. Trade-quality brands, Amazon price matching, and free Click & Collect at Cowdenbeath.",
   alternates: {
-    canonical: "https://bargainstore.uk/shop",
+    canonical: getAbsoluteUrl("/shop"),
   },
   openGraph: {
     title: "Shop UK Hardware, DIY Supplies & Power Tools | BargainStore.uk",
     description:
       "Explore our full catalogue of DIY tools, garden machinery, homewares, and electricals with transparent Amazon price comparisons.",
-    url: "https://bargainstore.uk/shop",
+    url: getAbsoluteUrl("/shop"),
     siteName: "BargainStore.uk",
     locale: "en_GB",
     type: "website",
@@ -87,8 +88,67 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     filtered.sort((a, b) => (b.savingAmount || 0) - (a.savingAmount || 0));
   }
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: getAbsoluteUrl("/"),
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Shop",
+        item: getAbsoluteUrl("/shop"),
+      },
+      ...(q
+        ? [
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: `Search: ${q}`,
+              item: getAbsoluteUrl(`/shop?q=${encodeURIComponent(q)}`),
+            },
+          ]
+        : []),
+    ],
+  };
+
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Shop UK Hardware, DIY Supplies & Power Tools | BargainStore.uk",
+    description:
+      "Explore our full catalogue of DIY tools, garden machinery, homewares, and electricals with transparent Amazon price comparisons.",
+    url: getAbsoluteUrl("/shop"),
+    mainEntity: {
+      "@type": "ItemList",
+      name: "All Hardware & DIY Products",
+      numberOfItems: filtered.length,
+      itemListElement: filtered.map((p, idx) => ({
+        "@type": "ListItem",
+        position: idx + 1,
+        name: p.name,
+        url: getAbsoluteUrl(`/product/${p.slug}`),
+      })),
+    },
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+      {/* Schema.org BreadcrumbList Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      {/* Schema.org CollectionPage Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-gray-500">
         <Link href="/" className="hover:text-brand-navy">Home</Link>

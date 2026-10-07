@@ -18,6 +18,8 @@ import {
   CheckCircle2,
   ShieldCheck,
   ChevronRight,
+  HelpCircle,
+  ChevronDown,
 } from "lucide-react";
 
 export const revalidate = 0; // Ensure fresh data from Turso
@@ -30,16 +32,82 @@ export default async function HomePage() {
   ]);
 
   const brandLogos = [
-    { name: "Black+Decker", src: "/assets/brands/black-decker.webp" },
-    { name: "Stanley", src: "/assets/brands/stanley.webp" },
-    { name: "Hozelock", src: "/assets/brands/hozelock.webp" },
-    { name: "Flymo", src: "/assets/brands/flymo.webp" },
-    { name: "Tower", src: "/assets/brands/tower.webp" },
-    { name: "Joseph Joseph", src: "/assets/brands/joseph-joseph.webp" },
+    {
+      name: "Black+Decker",
+      src: "/assets/brands/black-decker.webp",
+      tagline: "Cordless Power Tools & Multi-Tools",
+    },
+    {
+      name: "Stanley",
+      src: "/assets/brands/stanley.webp",
+      tagline: "Heavy-Duty Hand Tools & Storage",
+    },
+    {
+      name: "Hozelock",
+      src: "/assets/brands/hozelock.webp",
+      tagline: "Garden Hoses & Watering Systems",
+    },
+    {
+      name: "Flymo",
+      src: "/assets/brands/flymo.webp",
+      tagline: "British Lawn & Garden Innovation",
+    },
+    {
+      name: "Tower",
+      src: "/assets/brands/tower.webp",
+      tagline: "Kitchen Appliances & Cookware",
+    },
+    {
+      name: "Joseph Joseph",
+      src: "/assets/brands/joseph-joseph.webp",
+      tagline: "Intelligent Housewares & Design",
+    },
   ];
+
+  const homeFaqs = [
+    {
+      question: "Why are prices cheaper at BargainStore.uk than other UK retailers?",
+      answer:
+        "BargainStore UK operates with lean overheads backed by a national network of independent trade counters and direct bulk purchasing from authorized British distributors. We check prices daily against Amazon UK, B&Q, Screwfix, and Argos, passing true wholesale savings directly to UK retail and trade customers.",
+    },
+    {
+      question: "Are all products backed by genuine UK manufacturer warranties?",
+      answer:
+        "Yes. Every product we sell is 100% genuine British or international brand stock sourced through official UK supply chains. Products come complete with full manufacturer warranties (including Stanley, Black+Decker, Flymo, Hozelock, Tower, and Joseph Joseph guarantees) and full UK customer service support.",
+    },
+    {
+      question: "Can I collect my order in person?",
+      answer:
+        "Yes! We offer 100% FREE Click & Collect with zero minimum spend threshold. Orders in local stock can be collected in as little as 2 hours from our flagship trade hub at 175 High St, Cowdenbeath KY4 9QE or any of our 30+ participating independent high street hardware partner counters nationwide.",
+    },
+    {
+      question: "How do I qualify for free UK delivery?",
+      answer:
+        "All orders of £50 or more automatically qualify for FREE standard UK delivery via Royal Mail Tracked 48. Orders under £50 are delivered for a low flat rate of £4.99. Express Next Day delivery is also available via DPD Couriers for £6.99 when ordered by 2pm Monday to Friday.",
+    },
+  ];
+
+  const homeFaqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: homeFaqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
 
   return (
     <div className="space-y-10 md:space-y-12 pb-16">
+      {/* Schema.org FAQPage Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeFaqJsonLd) }}
+      />
+
       {/* 1. Hero Banner with real graphic and orange department buttons */}
       <HeroBanner />
 
@@ -208,14 +276,19 @@ export default async function HomePage() {
             <Link
               key={i}
               href={`/shop?brand=${encodeURIComponent(brand.name)}`}
-              className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-center hover:border-brand-navy hover:shadow-md transition-all group h-24"
+              className="bg-white rounded-xl border border-gray-200 p-4 flex flex-col items-center justify-center text-center hover:border-brand-navy hover:shadow-md transition-all group min-h-[110px]"
             >
-              <img
-                src={brand.src}
-                alt={brand.name}
-                className="max-h-12 max-w-full object-contain filter group-hover:scale-105 transition-transform"
-                loading="lazy"
-              />
+              <div className="h-10 flex items-center justify-center">
+                <img
+                  src={brand.src}
+                  alt={brand.name}
+                  className="max-h-10 max-w-full object-contain filter group-hover:scale-105 transition-transform"
+                  loading="lazy"
+                />
+              </div>
+              <span className="text-[11px] font-semibold text-gray-600 group-hover:text-brand-navy mt-2 leading-tight">
+                {brand.tagline}
+              </span>
             </Link>
           ))}
         </div>
@@ -398,6 +471,54 @@ export default async function HomePage() {
                 Start Shopping
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 10. Frequently Asked Questions About Shopping at BargainStore UK */}
+      <section className="max-w-7xl mx-auto px-4">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 space-y-6 shadow-2xs">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-navy uppercase tracking-wider">
+              <HelpCircle className="w-4 h-4 text-brand-navy" />
+              <span>Customer Help & FAQs</span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-black text-brand-heading">
+              Frequently Asked Questions About Shopping at BargainStore UK
+            </h2>
+            <p className="text-xs text-brand-slate max-w-2xl leading-relaxed">
+              Find instant answers about our low trade pricing, authentic brand guarantees, UK delivery terms, and high street Click &amp; Collect network.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {homeFaqs.map((faq, idx) => (
+              <details
+                key={idx}
+                className="group border border-gray-200 rounded-xl bg-gray-50/50 open:bg-white open:border-brand-navy/30 transition-all duration-200"
+              >
+                <summary className="flex items-center justify-between p-4 cursor-pointer list-none font-bold text-sm text-brand-heading hover:text-brand-navy">
+                  <span>{faq.question}</span>
+                  <ChevronDown className="w-4 h-4 text-brand-navy transition-transform duration-200 group-open:rotate-180 flex-shrink-0 ml-2" />
+                </summary>
+                <div className="px-4 pb-4 pt-1 text-xs text-gray-700 leading-relaxed border-t border-gray-100">
+                  {faq.answer}
+                </div>
+              </details>
+            ))}
+          </div>
+
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs border-t border-gray-100">
+            <span className="text-gray-500">
+              Have a question not listed here? Our British customer support team is ready to help.
+            </span>
+            <Link
+              href="/help"
+              className="font-bold text-brand-navy hover:text-[#e30613] inline-flex items-center gap-1"
+            >
+              <span>Visit Customer Support Centre</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
       </section>

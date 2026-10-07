@@ -2,9 +2,10 @@ import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getProductBySlug, getProductsByCategory } from "@/lib/data";
+import { getProductBySlug, getProductsByCategory, getCategoryBySlug } from "@/lib/data";
 import ProductCard from "@/components/ProductCard";
 import ProductDetailActions from "@/components/ProductDetailActions";
+import { SITE_URL, getAbsoluteUrl } from "@/lib/site";
 import {
   ChevronRight,
   Truck,
@@ -14,6 +15,8 @@ import {
   CheckCircle,
   Tag,
   ArrowRight,
+  HelpCircle,
+  ChevronDown,
 } from "lucide-react";
 
 interface ProductPageProps {
@@ -39,10 +42,10 @@ export async function generateMetadata({
   const description =
     product.description ||
     `Buy ${product.name} at BargainStore.uk. Genuine UK hardware with fast delivery and price comparison.`;
-  const url = `https://bargainstore.uk/product/${product.slug}`;
+  const url = getAbsoluteUrl(`/product/${product.slug}`);
   const imageUrl = product.image.startsWith("http")
     ? product.image
-    : `https://bargainstore.uk${product.image}`;
+    : getAbsoluteUrl(product.image);
 
   return {
     title,
@@ -83,13 +86,36 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  const relatedProducts = (await getProductsByCategory(product.categorySlug))
+  const [category, categoryProducts] = await Promise.all([
+    getCategoryBySlug(product.categorySlug),
+    getProductsByCategory(product.categorySlug),
+  ]);
+
+  const relatedProducts = categoryProducts
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
-  const specs: Record<string, string> = product.specs
-    ? JSON.parse(product.specs)
-    : {};
+  const categoryName = category
+    ? category.name
+    : product.categorySlug
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" & ");
+
+  let specs: Record<string, string> = {};
+  if (product.specs) {
+    try {
+      specs = JSON.parse(product.specs);
+    } catch {
+      specs = {};
+    }
+  }
+
+  const additionalProperty = Object.entries(specs).map(([key, val]) => ({
+    "@type": "PropertyValue",
+    name: key,
+    value: String(val),
+  }));
 
   const saving =
     product.savingAmount ||
@@ -97,35 +123,95 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
 
   const productImageUrl = product.image.startsWith("http")
     ? product.image
-    : `https://bargainstore.uk${product.image}`;
+    : getAbsoluteUrl(product.image);
+
+  const images = [productImageUrl];
+  if (product.additionalImages) {
+    try {
+      const extra = JSON.parse(product.additionalImages);
+      if (Array.isArray(extra)) {
+        for (const img of extra) {
+          if (typeof img === "string" && img.length > 0) {
+            images.push(img.startsWith("http") ? img : getAbsoluteUrl(img));
+          }
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
 
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    image: productImageUrl,
+    image: images,
     description: product.description,
+    sku: `BGS-${product.id}`,
+    mpn: `MPN-${product.id}`,
     brand: {
       "@type": "Brand",
       name: product.brand,
     },
+    category: categoryName,
     offers: {
       "@type": "Offer",
       priceCurrency: "GBP",
       price: Number(product.price),
+      priceValidUntil: "2026-12-31",
+      itemCondition: "https://schema.org/NewCondition",
       availability:
         Number(product.stock) > 0
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
-      url: `https://bargainstore.uk/product/${product.slug}`,
-    },
-    ...(product.rating > 0 && {
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: Number(product.rating.toFixed(1)),
-        reviewCount: Number(product.reviewCount) || 1,
+      url: getAbsoluteUrl(`/product/${product.slug}`),
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingRate: {
+          "@type": "MonetaryAmount",
+          value: Number(product.price) >= 50 ? "0.00" : "4.95",
+          currency: "GBP",
+        },
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: "GB",
+        },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: {
+            "@type": "QuantitativeValue",
+            minValue: 0,
+            maxValue: 1,
+            unitCode: "DAY",
+          },
+          transitTime: {
+            "@type": "QuantitativeValue",
+            minValue: 1,
+            maxValue: 3,
+            unitCode: "DAY",
+          },
+        },
       },
-    }),
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "GB",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 30,
+        returnMethod: "https://schema.org/ReturnByMail",
+        returnFees: "https://schema.org/FreeReturn",
+      },
+    },
+    ...(additionalProperty.length > 0 && { additionalProperty }),
+    ...(Number(product.rating) > 0 &&
+      Number(product.reviewCount) > 0 && {
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: Number(product.rating.toFixed(1)),
+          reviewCount: Number(product.reviewCount),
+          bestRating: 5,
+          worstRating: 1,
+        },
+      }),
   };
 
   const breadcrumbJsonLd = {
@@ -136,27 +222,68 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://bargainstore.uk",
+        item: getAbsoluteUrl("/"),
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Shop",
-        item: "https://bargainstore.uk/shop",
+        item: getAbsoluteUrl("/shop"),
       },
       {
         "@type": "ListItem",
         position: 3,
-        name: product.categorySlug.replace("-", " & "),
-        item: `https://bargainstore.uk/category/${product.categorySlug}`,
+        name: categoryName,
+        item: getAbsoluteUrl(`/category/${product.categorySlug}`),
       },
       {
         "@type": "ListItem",
         position: 4,
         name: product.name,
-        item: `https://bargainstore.uk/product/${product.slug}`,
+        item: getAbsoluteUrl(`/product/${product.slug}`),
       },
     ],
+  };
+
+  const highlights = [
+    `100% Genuine ${product.brand} UK stock with official manufacturer guarantee`,
+    `Fast UK courier dispatch via Royal Mail Tracked 48 & DPD (Free on orders over £50)`,
+    `Eligible for FREE 2-Hour High Street Click & Collect across 30+ UK stores`,
+    ...Object.entries(specs).slice(0, 3).map(([k, v]) => `${k}: ${v}`),
+  ].slice(0, 4);
+
+  const productFaqs = [
+    {
+      question: `Is this ${product.brand} product genuine and covered by warranty?`,
+      answer: `Yes, all ${product.brand} products sold on BargainStore UK are 100% genuine and sourced directly through authorized UK distribution channels. This item includes full British manufacturer warranty coverage against defects.`,
+    },
+    {
+      question: "How quickly will this item be dispatched?",
+      answer:
+        "Orders placed before 2:00 PM Monday through Friday are processed for same-day dispatch via Royal Mail Tracked 48 or DPD Express. Typical delivery across mainland UK takes 1-3 business days. Orders over £50 qualify for free standard UK delivery.",
+    },
+    {
+      question: "Can I return this product if it does not fit my project?",
+      answer:
+        "Yes. We provide a hassle-free 30-day return policy for unused items in original packaging. You can return this product free of charge to our Cowdenbeath trade counter or post it back via our tracked return service for a prompt refund.",
+    },
+    {
+      question: "Can I collect this item via Click & Collect?",
+      answer: `Yes. Free Click & Collect is available with zero minimum spend threshold. If this ${product.name} is in local stock, it can be ready for collection in as little as 2 hours from our flagship store at 175 High St, Cowdenbeath KY4 9QE or partner hardware stores.`,
+    },
+  ];
+
+  const productFaqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: productFaqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
   };
 
   return (
@@ -170,6 +297,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productFaqJsonLd) }}
+      />
 
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-gray-500">
@@ -177,8 +308,8 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
         <ChevronRight className="w-3 h-3" />
         <Link href="/shop" className="hover:text-brand-navy">Shop</Link>
         <ChevronRight className="w-3 h-3" />
-        <Link href={`/category/${product.categorySlug}`} className="hover:text-brand-navy capitalize">
-          {product.categorySlug.replace("-", " & ")}
+        <Link href={`/category/${product.categorySlug}`} className="hover:text-brand-navy">
+          {categoryName}
         </Link>
         <ChevronRight className="w-3 h-3" />
         <span className="font-semibold text-brand-navy truncate max-w-xs">{product.name}</span>
@@ -259,6 +390,21 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             <p className="text-xs sm:text-sm text-brand-slate leading-relaxed">
               {product.description}
             </p>
+
+            {/* Key Features & Highlights (AI & Customer Extraction) */}
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-3.5 space-y-2">
+              <span className="text-[11px] font-bold text-brand-navy uppercase tracking-wider block">
+                Key Features &amp; Highlights:
+              </span>
+              <ul className="space-y-1.5 text-xs text-gray-700">
+                {highlights.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <CheckCircle className="w-3.5 h-3.5 text-brand-green flex-shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Interactive Add to Basket Component */}
@@ -301,6 +447,39 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
           </div>
         </div>
       )}
+
+      {/* Product-Level Q&A Module */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 space-y-6">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-navy uppercase tracking-wider">
+            <HelpCircle className="w-4 h-4 text-brand-navy" />
+            <span>Product &amp; Purchase FAQs</span>
+          </div>
+          <h2 className="text-lg md:text-xl font-bold text-brand-heading">
+            Frequently Asked Questions About {product.name}
+          </h2>
+          <p className="text-xs text-gray-500">
+            Essential information regarding authenticity, warranty protection, delivery timelines, and returns for this product.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          {productFaqs.map((faq, idx) => (
+            <details
+              key={idx}
+              className="group border border-gray-200 rounded-xl bg-gray-50/50 open:bg-white open:border-brand-navy/30 transition-all duration-200"
+            >
+              <summary className="flex items-center justify-between p-4 cursor-pointer list-none font-bold text-sm text-brand-heading hover:text-brand-navy">
+                <span>{faq.question}</span>
+                <ChevronDown className="w-4 h-4 text-brand-navy transition-transform duration-200 group-open:rotate-180 flex-shrink-0 ml-2" />
+              </summary>
+              <div className="px-4 pb-4 pt-1 text-xs text-gray-700 leading-relaxed border-t border-gray-100">
+                {faq.answer}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
