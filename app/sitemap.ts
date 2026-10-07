@@ -4,7 +4,7 @@ import { getAllCategories, getAllProducts } from "@/lib/data";
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://bargainstore.uk";
+  const baseUrl = "https://www.bargainstore.uk.com";
   const now = new Date();
 
   const [categories, products] = await Promise.all([

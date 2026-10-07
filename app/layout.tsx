@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart-context";
 import StorefrontShell from "@/components/StorefrontShell";
@@ -12,7 +13,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://bargainstore.uk"),
+  metadataBase: new URL("https://www.bargainstore.uk.com"),
   title: {
     default: "BargainStore.uk | Trusted UK Brands At Low Prices",
     template: "%s | BargainStore.uk",
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   description:
     "BargainStore.uk — Real UK DIY, garden tools, paints, homewares and appliances with transparent price comparisons against Amazon and the high street. Fast UK delivery & free Click & Collect.",
   applicationName: "BargainStore.uk",
-  authors: [{ name: "BargainStore UK Ltd", url: "https://bargainstore.uk" }],
+  authors: [{ name: "BargainStore UK Ltd", url: "https://www.bargainstore.uk.com" }],
   creator: "BargainStore UK Ltd",
   publisher: "BargainStore UK Ltd",
   formatDetection: {
@@ -48,9 +49,9 @@ export const metadata: Metadata = {
     "discount homewares UK",
   ],
   alternates: {
-    canonical: "https://bargainstore.uk",
+    canonical: "https://www.bargainstore.uk.com",
     languages: {
-      "en-GB": "https://bargainstore.uk",
+      "en-GB": "https://www.bargainstore.uk.com",
     },
   },
   icons: {
@@ -85,7 +86,7 @@ export const metadata: Metadata = {
     title: "BargainStore.uk | Trusted UK Brands At Low Prices",
     description:
       "BargainStore.uk — Real UK DIY, garden tools, paints, homewares and appliances with transparent price comparisons against Amazon and the high street. Fast UK delivery & free Click & Collect.",
-    url: "https://bargainstore.uk",
+    url: "https://www.bargainstore.uk.com",
     siteName: "BargainStore.uk",
     locale: "en_GB",
     type: "website",
@@ -112,6 +113,12 @@ export const metadata: Metadata = {
       "Real UK DIY, garden tools, paints, homewares and appliances with transparent price comparisons.",
     images: ["/opengraph-image.png", "/assets/brands/flymo.webp"],
   },
+  verification: {
+    google: [
+      "K7d_-DG8KlrQ1MExFyx-_wxXgBhRjSbRYXwkb9WPlv8",
+      "p661Fo4H_NDBkhkvm-Uq-NiAzHu876I1ffAMdGVeeCA",
+    ],
+  },
   category: "shopping",
   classification: "Hardware, DIY, Garden Tools, Paints & Homewares Retail",
 };
@@ -120,8 +127,8 @@ const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "BargainStore.uk",
-  url: "https://bargainstore.uk",
-  logo: "https://bargainstore.uk/assets/brands/flymo.webp",
+  url: "https://www.bargainstore.uk.com",
+  logo: "https://www.bargainstore.uk.com/assets/brands/flymo.webp",
   description:
     "BargainStore.uk — Real UK DIY, garden tools, paints, homewares and appliances with transparent price comparisons against Amazon and the high street. Fast UK delivery & free Click & Collect.",
   contactPoint: {
@@ -143,12 +150,12 @@ const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "BargainStore.uk",
-  url: "https://bargainstore.uk",
+  url: "https://www.bargainstore.uk.com",
   potentialAction: {
     "@type": "SearchAction",
     target: {
       "@type": "EntryPoint",
-      urlTemplate: "https://bargainstore.uk/shop?q={search_term_string}",
+      urlTemplate: "https://www.bargainstore.uk.com/shop?q={search_term_string}",
     },
     "query-input": "required name=search_term_string",
   },
@@ -158,9 +165,9 @@ const localBusinessJsonLd = {
   "@context": "https://schema.org",
   "@type": "HardwareStore",
   name: "BargainStore.uk Flagship Store & Trade Counter",
-  image: "https://bargainstore.uk/opengraph-image.png",
+  image: "https://www.bargainstore.uk.com/opengraph-image.png",
   telephone: "+44-800-123-4567",
-  url: "https://bargainstore.uk",
+  url: "https://www.bargainstore.uk.com",
   priceRange: "£",
   address: {
     "@type": "PostalAddress",
@@ -225,6 +232,21 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col bg-white text-brand-slate selection:bg-brand-navy selection:text-white">
+        {/* Google Analytics 4 */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-NE66MGVSSL"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-NE66MGVSSL', {
+              page_path: window.location.pathname,
+            });
+          `}
+        </Script>
         <CartProvider>
           <StorefrontShell categories={categories}>
             {children}

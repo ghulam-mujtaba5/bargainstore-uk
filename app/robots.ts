@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin", "/api"],
       },
     ],
-    sitemap: "https://bargainstore.uk/sitemap.xml",
+    sitemap: "https://www.bargainstore.uk.com/sitemap.xml",
   };
 }
