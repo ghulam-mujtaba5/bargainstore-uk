@@ -934,8 +934,8 @@ describe("Tier 1: Feature Coverage (22 Features, Happy Path)", () => {
     const footerPath = path.join(PROJECT_ROOT, "components/Footer.tsx");
     const footerContent = fs.readFileSync(footerPath, "utf-8");
 
-    it("20.1 should include company registration reference in footer", () => {
-      assert.ok(footerContent.includes("BargainStore.uk") && footerContent.includes("Registered"));
+    it("20.1 should include company branding and address in footer", () => {
+      assert.ok(footerContent.includes("BargainStore.uk") && footerContent.includes("Cowdenbeath"));
     });
 
     it("20.2 should include links to Terms, Privacy, and Cookie legal policies", () => {

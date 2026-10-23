@@ -357,15 +357,11 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 pt-6 mt-4 border-t border-white/10 text-xs text-gray-400 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="space-y-1.5">
           <div className="text-gray-300 font-medium">
-            © {new Date().getFullYear()} BargainStore.uk Ltd. All rights reserved. Registered in the UK.
-          </div>
-          <div className="text-[11px] text-gray-400">
-            Company No. 14285910 | VAT Reg: GB 412 8901 23
+            © {new Date().getFullYear()} BargainStore.uk Ltd. All rights reserved.
           </div>
           <div className="text-[11px] text-gray-300 font-medium leading-relaxed flex items-start gap-1.5">
             <MapPin className="w-3.5 h-3.5 text-brand-yellow shrink-0 mt-0.5" />
             <span>
-              Registered Office: BargainStore UK Ltd,{" "}
               <strong className="text-white">175 High St, Cowdenbeath KY4 9QE, United Kingdom</strong>
             </span>
           </div>

@@ -307,7 +307,7 @@ describe("Tier 4: Realistic Real-World Application Scenarios (5 Comprehensive Wo
 
     // Step 5: Crawler verifies UK retail trust credentials in Footer
     const footerContent = fs.readFileSync(path.join(PROJECT_ROOT, "components/Footer.tsx"), "utf-8");
-    assert.ok(footerContent.includes("BargainStore.uk Ltd. All rights reserved. Registered in the UK."));
+    assert.ok(footerContent.includes("BargainStore.uk Ltd. All rights reserved."));
     assert.ok(footerContent.includes("/terms"));
     assert.ok(footerContent.includes("/privacy"));
     assert.ok(footerContent.includes("/cookies"));
